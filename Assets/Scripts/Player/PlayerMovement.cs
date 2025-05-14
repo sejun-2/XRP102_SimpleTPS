@@ -12,14 +12,13 @@ public class PlayerMovement : MonoBehaviour
     private PlayerStatus _playerStatus;
 
     [Header("Mouse Config")]
-    [SerializeField][Range(-90, 0)] private float _minpitch;
-    [SerializeField][Range(0, 90)] private float _maxpitch;
+    [SerializeField][Range(-90, 0)] private float _minPitch;
+    [SerializeField][Range(0, 90)] private float _maxPitch;
     [SerializeField][Range(0, 5)] private float _mouseSensitivity = 1;
 
-    private void Awake()
-    {
-        Init();
-    }
+    private Vector2 _currentRotation;
+
+    private void Awake() => Init();
 
     private void Init()
     {
@@ -31,11 +30,11 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 moveDirection = GetMoveDirection();
 
-        Vector3 Velocity = _rigidbody.velocity;
-        Velocity.x = moveDirection.x * moveSpeed;
-        Velocity.z = moveDirection.z * moveSpeed;
+        Vector3 velocity = _rigidbody.velocity;
+        velocity.x = moveDirection.x * moveSpeed;
+        velocity.z = moveDirection.z * moveSpeed;
 
-        _rigidbody.velocity = Velocity;  
+        _rigidbody.velocity = velocity;
 
         return moveDirection;
     }
@@ -44,61 +43,85 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector2 mouseDir = GetMouseDirection();
 
-        Vector2 currentRotation = new()  //어떤 각도에 있는가
-        {
-            x = transform.rotation.eulerAngles.x,
-            y = transform.rotation.eulerAngles.y
-        };
+        //  x축의 경우라면 제한을 걸 필요 없음
+        _currentRotation.x += mouseDir.x;
 
-        currentRotation.x += mouseDir.x; // x축의 경우라면 제한을 걸 필요 없음
+        // y축의 경우엔 각도 제한을 걸어야 함.
+        _currentRotation.y = Mathf.Clamp(
+            _currentRotation.y + mouseDir.y,
+            _minPitch,
+            _maxPitch
+            );
 
-        // y축의 경우는 각도 제한을 걸어야 함
-        currentRotation.y = Mathf.Clamp(currentRotation.y + mouseDir.y, _minpitch, _maxpitch);
-
-        // 캐릭터의 오브젝트의 경우에는 Y축 회전만 필요함
-        transform.rotation = Quaternion.Euler(0, currentRotation.x, 0); // Z축은 회전이 필요 없음
+        // 캐릭터 오브젝트의 경우에는 Y축 회전만 반영
+        transform.rotation = Quaternion.Euler(0, _currentRotation.x, 0);
 
         // 에임의 경우 상하 회전 반영
         Vector3 currentEuler = _aim.localEulerAngles;
-        _aim.localEulerAngles = new Vector3(currentRotation.y, currentEuler.y, currentEuler.z); // Y축은 회전이 필요 없음
+        _aim.localEulerAngles = new Vector3(_currentRotation.y, currentEuler.y, currentEuler.z);
 
         // 회전 방향 벡터 반환
         Vector3 rotateDirVector = transform.forward;
-        rotateDirVector.y = 0; // Y축은 회전이 필요 없음
-        return rotateDirVector.normalized;  //정규화 해서 반환
+        rotateDirVector.y = 0;
+        return rotateDirVector.normalized;
     }
 
     public void SetAvatarRotation(Vector3 direction)
     {
-        if(direction == Vector3.zero) return; // 이동하지 않을 경우 회전하지 않음
+        if (direction == Vector3.zero) return;
 
-        Quaternion targetRotation = Quaternion.LookRotation(direction); // 바라보는 방향으로 회전
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
 
-        _avatar.rotation = Quaternion.Lerp(_avatar.rotation, targetRotation, _playerStatus.RotateSpeed * Time.deltaTime); // 부드럽게 회전
+        _avatar.rotation = Quaternion.Lerp(
+            _avatar.rotation,
+            targetRotation,
+            _playerStatus.RotateSpeed * Time.deltaTime
+            );
     }
 
     private Vector2 GetMouseDirection()
     {
-        float mouseX = Input.GetAxis("Mouse X") * _mouseSensitivity;    // 마우스의 센서 설정값
-        float mouseY = -Input.GetAxis("Mouse Y") * _mouseSensitivity;   // 반전( - ) 마우스 위 아래는 반전 해야 원하는 방향으로 움직임
+        float mouseX = Input.GetAxis("Mouse X") * _mouseSensitivity;
+        float mouseY = -Input.GetAxis("Mouse Y") * _mouseSensitivity;
 
         return new Vector2(mouseX, mouseY);
     }
-
+    
+    // 벡터 그림 (수업 후)
     public Vector3 GetMoveDirection()
     {
         Vector3 input = GetInputDirection();
-        Vector3 direction = (transform.right * input.x) + (transform.forward * input.z);
+
+        Vector3 direction =
+           (transform.right * input.x) + 
+           (transform.forward * input.z);
 
         return direction.normalized;
     }
 
     public Vector3 GetInputDirection()
     {
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
+        float x = Input.GetAxisRaw("Horizontal");
+        float z = Input.GetAxisRaw("Vertical");
 
         return new Vector3(x, 0, z);
     }
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
