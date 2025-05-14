@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
         _playerStatus = GetComponent<PlayerStatus>();
     }
 
-    public Vector3 SetMove(float moveSpeed)
+    public Vector3 SetMove(float moveSpeed)     // Controller 에서 호출시 반환해서 보내기 위해 반환형을 Vecter3 형식으로 
     {
         Vector3 moveDirection = GetMoveDirection();
 
@@ -36,7 +36,7 @@ public class PlayerMovement : MonoBehaviour
 
         _rigidbody.velocity = velocity;
 
-        return moveDirection;
+        return moveDirection;   // 이동 방향 벡터 반환
     }
 
     public Vector3 SetAimRotation()
@@ -46,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
         //  x축의 경우라면 제한을 걸 필요 없음
         _currentRotation.x += mouseDir.x;
 
-        // y축의 경우엔 각도 제한을 걸어야 함.
+        // y축의 경우엔 각도 제한을 걸어야 함.  Clamp 로 범위를 지정
         _currentRotation.y = Mathf.Clamp(
             _currentRotation.y + mouseDir.y,
             _minPitch,
@@ -79,10 +79,10 @@ public class PlayerMovement : MonoBehaviour
             );
     }
 
-    private Vector2 GetMouseDirection()
+    private Vector2 GetMouseDirection()     // 마우스로 화면 이동
     {
         float mouseX = Input.GetAxis("Mouse X") * _mouseSensitivity;
-        float mouseY = -Input.GetAxis("Mouse Y") * _mouseSensitivity;
+        float mouseY = -Input.GetAxis("Mouse Y") * _mouseSensitivity;   // (-) 붙여야 위아래로 움직임, 화면 반전
 
         return new Vector2(mouseX, mouseY);
     }
