@@ -66,17 +66,17 @@ public class PlayerMovement : MonoBehaviour
         return rotateDirVector.normalized;
     }
 
-    public void SetAvatarRotation(Vector3 direction)
+    public void SetAvatarRotation(Vector3 direction)    // 어느방향으로 회전할 것인지에 대한 방향 벡터를 받아서 회전하는 메서드
     {
-        if (direction == Vector3.zero) return;
+        if (direction == Vector3.zero) return;  // 이동하지 않을 경우 회전하지 않음
 
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        Quaternion targetRotation = Quaternion.LookRotation(direction); //어느 방향으로 회전할 것인지에 대한 쿼터니언을 반환
 
         _avatar.rotation = Quaternion.Lerp(
             _avatar.rotation,
             targetRotation,
             _playerStatus.RotateSpeed * Time.deltaTime
-            );
+            );  // 보간을 통해 부드럽게 회전
     }
 
     private Vector2 GetMouseDirection()     // 마우스로 화면 이동
