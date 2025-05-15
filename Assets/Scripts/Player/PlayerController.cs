@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
 
     private PlayerStatus _status;
     private PlayerMovement _movement;
+    private Animator _animator;
 
     [SerializeField] private CinemachineVirtualCamera _aimCamera;
 
@@ -26,6 +27,7 @@ public class PlayerController : MonoBehaviour
     {
         _status = GetComponent<PlayerStatus>();
         _movement = GetComponent<PlayerMovement>();
+        _animator = GetComponent<Animator>();
         // _mainCamera = Camera.main.gameObject;
     }
 
@@ -63,12 +65,22 @@ public class PlayerController : MonoBehaviour
     public void SubscribeEvents()
     {
         _status.IsAiming.Subscribe(_aimCamera.gameObject.SetActive);
+
+        _status.IsAiming.Subscribe(SetAimAnimation);    // IsAiming 이벤트가 발생할 때마다 실행
     }
 
     public void UnsubscribeEvents()
     {
         _status.IsAiming.Unsubscribe(_aimCamera.gameObject.SetActive);
+
+        _status.IsAiming.Unsubscribe(SetAimAnimation);  //구독을 해지하는 경우
     }
+
+    private void SetAimAnimation(bool value)
+    {
+        _animator.SetBool("IsAim", value);  // IsAim 값이 들어오면
+    }
+
 }
 
 
