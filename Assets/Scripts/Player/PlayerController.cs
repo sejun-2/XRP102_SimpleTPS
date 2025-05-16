@@ -4,7 +4,7 @@ using UnityEngine;
 using Cinemachine;
 using UnityEngine.UI;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamagable
 {
     public bool IsControlActivate { get; set; } = true;
 
@@ -45,15 +45,6 @@ public class PlayerController : MonoBehaviour
         HandleMovement();
         HandleAiming();
         HandleShooting();
-
-        if (Input.GetKey(KeyCode.Alpha1))
-        {
-            _status.CurrentHp.Value--;
-        }
-        if (Input.GetKey(KeyCode.Alpha2))
-        {
-            _status.CurrentHp.Value++;
-        }
     }
 
     private void HandleShooting()
@@ -101,28 +92,24 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage(int value)
     {
-        // TODO : 데미지 처리, 체력을 떨어뜨리되 체력이 0이 되면 플레이어가 죽도록 처리함.
         _status.CurrentHp.Value -= value;
 
-        if (_status.CurrentHp.Value <= 0)
-        {
-            Dead();
-        }
+        if (_status.CurrentHp.Value <= 0) Dead();
     }
 
     public void RecoveryHp(int value)
     {
-        // TODO : 체력 회복 처리. MaxHP를 넘지 않도록 처리함.
         int hp = _status.CurrentHp.Value + value;
 
-        // 체력이 MaxHP를 넘지 않도록 처리함.   hp = 0 ~ MaxHP
-        _status.CurrentHp.Value = Mathf.Clamp(hp, 0, _status.MaxHP);
-
+        _status.CurrentHp.Value = Mathf.Clamp(
+            hp,
+            0,
+            _status.MaxHP
+        );
     }
 
     public void Dead()
     {
-        // TODO : 사망 처리.
         Debug.Log("플레이어 사망 처리");
     }
 
