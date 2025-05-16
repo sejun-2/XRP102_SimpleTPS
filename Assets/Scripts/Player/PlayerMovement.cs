@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
         _playerStatus = GetComponent<PlayerStatus>();
     }
 
-    public Vector3 SetMove(float moveSpeed)     // Controller ¿¡¼­ È£Ãâ½Ã ¹İÈ¯ÇØ¼­ º¸³»±â À§ÇØ ¹İÈ¯ÇüÀ» Vecter3 Çü½ÄÀ¸·Î 
+    public Vector3 SetMove(float moveSpeed)
     {
         Vector3 moveDirection = GetMoveDirection();
 
@@ -36,58 +36,57 @@ public class PlayerMovement : MonoBehaviour
 
         _rigidbody.velocity = velocity;
 
-        return moveDirection;   // ÀÌµ¿ ¹æÇâ º¤ÅÍ ¹İÈ¯
+        return moveDirection;
     }
 
     public Vector3 SetAimRotation()
     {
         Vector2 mouseDir = GetMouseDirection();
 
-        //  xÃàÀÇ °æ¿ì¶ó¸é Á¦ÇÑÀ» °É ÇÊ¿ä ¾øÀ½
+        // Xë°©í–¥ íšŒì „ì€ ê°ë„ ì œí•œ ì—†ìŒ.
         _currentRotation.x += mouseDir.x;
 
-        // yÃàÀÇ °æ¿ì¿£ °¢µµ Á¦ÇÑÀ» °É¾î¾ß ÇÔ.  Clamp ·Î ¹üÀ§¸¦ ÁöÁ¤
+        // yï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ì¿£ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½É¾ï¿½ï¿½ ï¿½ï¿½.
         _currentRotation.y = Mathf.Clamp(
             _currentRotation.y + mouseDir.y,
             _minPitch,
             _maxPitch
             );
 
-        // Ä³¸¯ÅÍ ¿ÀºêÁ§Æ®ÀÇ °æ¿ì¿¡´Â YÃà È¸Àü¸¸ ¹İ¿µ
+        // Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ Yï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ ï¿½İ¿ï¿½
         transform.rotation = Quaternion.Euler(0, _currentRotation.x, 0);
 
-        // ¿¡ÀÓÀÇ °æ¿ì »óÇÏ È¸Àü ¹İ¿µ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½İ¿ï¿½
         Vector3 currentEuler = _aim.localEulerAngles;
         _aim.localEulerAngles = new Vector3(_currentRotation.y, currentEuler.y, currentEuler.z);
 
-        // È¸Àü ¹æÇâ º¤ÅÍ ¹İÈ¯
+        // È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
         Vector3 rotateDirVector = transform.forward;
         rotateDirVector.y = 0;
         return rotateDirVector.normalized;
     }
 
-    public void SetAvatarRotation(Vector3 direction)    // ¾î´À¹æÇâÀ¸·Î È¸ÀüÇÒ °ÍÀÎÁö¿¡ ´ëÇÑ ¹æÇâ º¤ÅÍ¸¦ ¹Ş¾Æ¼­ È¸ÀüÇÏ´Â ¸Ş¼­µå
+    public void SetAvatarRotation(Vector3 direction)
     {
-        if (direction == Vector3.zero) return;  // ÀÌµ¿ÇÏÁö ¾ÊÀ» °æ¿ì È¸ÀüÇÏÁö ¾ÊÀ½
+        if (direction == Vector3.zero) return;
 
-        Quaternion targetRotation = Quaternion.LookRotation(direction); //¾î´À ¹æÇâÀ¸·Î È¸ÀüÇÒ °ÍÀÎÁö¿¡ ´ëÇÑ ÄõÅÍ´Ï¾ğÀ» ¹İÈ¯
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
 
         _avatar.rotation = Quaternion.Lerp(
             _avatar.rotation,
             targetRotation,
             _playerStatus.RotateSpeed * Time.deltaTime
-            );  // º¸°£À» ÅëÇØ ºÎµå·´°Ô È¸Àü
+            );
     }
 
-    private Vector2 GetMouseDirection()     // ¸¶¿ì½º·Î È­¸é ÀÌµ¿
+    private Vector2 GetMouseDirection()
     {
         float mouseX = Input.GetAxis("Mouse X") * _mouseSensitivity;
-        float mouseY = -Input.GetAxis("Mouse Y") * _mouseSensitivity;   // (-) ºÙ¿©¾ß À§¾Æ·¡·Î ¿òÁ÷ÀÓ, È­¸é ¹İÀü
+        float mouseY = -Input.GetAxis("Mouse Y") * _mouseSensitivity;
 
         return new Vector2(mouseX, mouseY);
     }
     
-    // º¤ÅÍ ±×¸² (¼ö¾÷ ÈÄ)
     public Vector3 GetMoveDirection()
     {
         Vector3 input = GetInputDirection();

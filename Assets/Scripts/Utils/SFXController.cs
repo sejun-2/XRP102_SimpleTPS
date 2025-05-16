@@ -8,27 +8,22 @@ public class SFXController : PooledObject
     private AudioSource _audioSource;
     private float _currentCount;
 
-    private void Awake()
-    {
-        Init();
-    }
+    private void Awake() => Init();
 
     private void Init()
     {
         _audioSource = GetComponent<AudioSource>();
-
-        //_audioSource.playOnAwake = true;
     }
 
     private void Update()
     {
-        // ÇÑ ÇÁ·¹ÀÓÀÌ °»½ÅµÉ¶§±îÁöÀÇ ½Ã°£ = DeltaTime
-        _currentCount -= Time.deltaTime;    // ÇÁ·¹ÀÓ¸¶´Ù ½Ã°£ °è»ê.
+        // í•œ í”„ë ˆì„ì´ ê°±ì‹ ë ë•Œê¹Œì§€ì˜ ì‹œê°„ = DeltaTime
+        _currentCount -= Time.deltaTime;
 
-        if(_currentCount <= 0)
+        if (_currentCount <= 0)
         {
-            //_audioSource.Stop();
-            //_audioSource.clip = null;
+            // _audioSource.Stop();
+            // _audioSource.clip = null;
             ReturnPool();
         }
     }
@@ -39,7 +34,6 @@ public class SFXController : PooledObject
         _audioSource.clip = clip;
         _audioSource.Play();
 
-        _currentCount = clip.length;         // lenght ¿Àµğ¿À Å¬¸³ÀÌ ¸îÃÊÀÎÁö.?
+        _currentCount = clip.length;
     }
-
 }

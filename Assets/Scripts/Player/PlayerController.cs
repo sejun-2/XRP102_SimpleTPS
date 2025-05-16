@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,33 +11,61 @@ public class PlayerController : MonoBehaviour
     private PlayerStatus _status;
     private PlayerMovement _movement;
     private Animator _animator;
+    private Image _aimImage;
 
     [SerializeField] private CinemachineVirtualCamera _aimCamera;
+    [SerializeField] private Gun _gun;
+    [SerializeField] private Animator _aimAnimator;
+    [SerializeField] private HpGuageUI _hpUI;
 
     [SerializeField] private KeyCode _aimKey = KeyCode.Mouse1;
+    [SerializeField] private KeyCode _shootKey = KeyCode.Mouse0;
 
     private void Awake() => Init();
     private void OnEnable() => SubscribeEvents();
     private void Update() => HandlePlayerControl();
     private void OnDisable() => UnsubscribeEvents();
 
-    /// <summary>
-    /// ÃÊ±âÈ­¿ë ÇÔ¼ö, °´Ã¼ »ı¼º½Ã ÇÊ¿äÇÑ ÃÊ±âÈ­ ÀÛ¾÷ÀÌ ÀÖ´Ù¸é ¿©±â¼­ ¼öÇàÇÑ´Ù.
-    /// </summary>
+
     private void Init()
     {
         _status = GetComponent<PlayerStatus>();
         _movement = GetComponent<PlayerMovement>();
         _animator = GetComponent<Animator>();
-        // _mainCamera = Camera.main.gameObject;
+        _aimImage = _aimAnimator.GetComponent<Image>();
+
+        _hpUI.SetImageFillAmount(1);
+        _status.CurrentHp.Value = _status.MaxHP;
     }
 
     private void HandlePlayerControl()
     {
-        if (!IsControlActivate) return; 
+        if (!IsControlActivate) return;
 
         HandleMovement();
         HandleAiming();
+        HandleShooting();
+
+        if (Input.GetKey(KeyCode.Alpha1))
+        {
+            _status.CurrentHp.Value--;
+        }
+        if (Input.GetKey(KeyCode.Alpha2))
+        {
+            _status.CurrentHp.Value++;
+        }
+    }
+
+    private void HandleShooting()
+    {
+        if (_status.IsAiming.Value && Input.GetKey(_shootKey))
+        {
+            _status.IsAttacking.Value = _gun.Shoot();
+        }
+        else
+        {
+            _status.IsAttacking.Value = false;
+        }
     }
 
     private void HandleMovement()
@@ -56,12 +85,12 @@ public class PlayerController : MonoBehaviour
 
         _movement.SetAvatarRotation(avatarDir);
 
-        // SetAnimationParameter, Aim »óÅÂÀÏ ‹š¸¸.
+        // Aim ìƒíƒœì¼ ë•Œë§Œ.
         if (_status.IsAiming.Value)
         {
             Vector3 input = _movement.GetInputDirection();
             _animator.SetFloat("X", input.x);
-            _animator.SetFloat("Y", input.y);
+            _animator.SetFloat("Z", input.z);
         }
     }
 
@@ -70,32 +99,70 @@ public class PlayerController : MonoBehaviour
         _status.IsAiming.Value = Input.GetKey(_aimKey);
     }
 
+    public void TakeDamage(int value)
+    {
+        // TODO : ë°ë¯¸ì§€ ì²˜ë¦¬, ì²´ë ¥ì„ ë–¨ì–´ëœ¨ë¦¬ë˜ ì²´ë ¥ì´ 0ì´ ë˜ë©´ í”Œë ˆì´ì–´ê°€ ì£½ë„ë¡ ì²˜ë¦¬í•¨.
+        _status.CurrentHp.Value -= value;
+
+        if (_status.CurrentHp.Value <= 0)
+        {
+            Dead();
+        }
+    }
+
+    public void RecoveryHp(int value)
+    {
+        // TODO : ì²´ë ¥ íšŒë³µ ì²˜ë¦¬. MaxHPë¥¼ ë„˜ì§€ ì•Šë„ë¡ ì²˜ë¦¬í•¨.
+        int hp = _status.CurrentHp.Value + value;
+
+        // ì²´ë ¥ì´ MaxHPë¥¼ ë„˜ì§€ ì•Šë„ë¡ ì²˜ë¦¬í•¨.   hp = 0 ~ MaxHP
+        _status.CurrentHp.Value = Mathf.Clamp(hp, 0, _status.MaxHP);
+
+    }
+
+    public void Dead()
+    {
+        // TODO : ì‚¬ë§ ì²˜ë¦¬.
+        Debug.Log("í”Œë ˆì´ì–´ ì‚¬ë§ ì²˜ë¦¬");
+    }
+
     public void SubscribeEvents()
     {
-        _status.IsAiming.Subscribe(_aimCamera.gameObject.SetActive);
+        _status.CurrentHp.Subscribe(SetHpUIGuage);
 
-        _status.IsAiming.Subscribe(SetAimAnimation);    // IsAiming ÀÌº¥Æ®°¡ ¹ß»ıÇÒ ¶§¸¶´Ù ½ÇÇà
-        _status.IsAiming.Subscribe(SetMoveAnimation);
+        _status.IsMoving.Subscribe(SetMoveAnimation);
+
+        _status.IsAiming.Subscribe(_aimCamera.gameObject.SetActive);
+        _status.IsAiming.Subscribe(SetAimAnimation);
+
+        _status.IsAttacking.Subscribe(SetAttackAnimation);
     }
 
     public void UnsubscribeEvents()
     {
-        _status.IsAiming.Unsubscribe(_aimCamera.gameObject.SetActive);
+        _status.CurrentHp.Unsubscribe(SetHpUIGuage);
 
-        _status.IsAiming.Unsubscribe(SetAimAnimation);  //±¸µ¶À» ÇØÁöÇÏ´Â °æ¿ì
-        _status.IsAiming.Unsubscribe(SetMoveAnimation);
+        _status.IsMoving.Unsubscribe(SetMoveAnimation);
+
+        _status.IsAiming.Unsubscribe(_aimCamera.gameObject.SetActive);
+        _status.IsAiming.Unsubscribe(SetAimAnimation);
+
+        _status.IsAttacking.Unsubscribe(SetAttackAnimation);
     }
 
     private void SetAimAnimation(bool value)
     {
-        _animator.SetBool("IsAim", value);  // IsAim °ªÀÌ µé¾î¿À¸é
+        if (!_aimImage.enabled) _aimImage.enabled = true;
+        _animator.SetBool("IsAim", value);
+        _aimAnimator.SetBool("IsAim", value);
     }
-
-    private void SetMoveAnimation(bool value)
+    private void SetMoveAnimation(bool value) => _animator.SetBool("IsMove", value);
+    private void SetAttackAnimation(bool value) => _animator.SetBool("IsAttack", value);
+    private void SetHpUIGuage(int currentHp)
     {
-        _animator.SetBool("IsMove", value);
+        float hp = currentHp / (float)_status.MaxHP;
+        _hpUI.SetImageFillAmount(hp);
     }
-
 }
 
 

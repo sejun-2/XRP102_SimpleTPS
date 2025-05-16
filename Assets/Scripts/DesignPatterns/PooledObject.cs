@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.VisionOS;
 using UnityEngine;
 
 namespace DesignPattern
@@ -8,7 +9,7 @@ namespace DesignPattern
     {
         public ObjectPool ObjPool { get; private set; }
 
-        public void PooledInit(ObjectPool objPool)  // 생성할때 자기자신을 넣어줄 수 있도록 public
+        public void PooledInit(ObjectPool objPool)
         {
             ObjPool = objPool;
         }
@@ -17,7 +18,6 @@ namespace DesignPattern
         {
             ObjPool.PushPool(this);
         }
-
     }
 }
 

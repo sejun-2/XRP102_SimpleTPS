@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using DesignPattern;
+using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
@@ -12,10 +12,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private SFXController _sfxPrefab;
 
 
-    private void Awake()
-    {
-        Init();
-    }
+    private void Awake() => Init();
 
     private void Init()
     {
@@ -26,7 +23,7 @@ public class AudioManager : MonoBehaviour
 
     public void BgmPlay(int index)
     {
-        if(0 <= index && index < _bgmList.Count)
+        if (0 <= index && index < _bgmList.Count)
         {
             _bgmSource.Stop();
             _bgmSource.clip = _bgmList[index];
@@ -36,9 +33,8 @@ public class AudioManager : MonoBehaviour
 
     public SFXController GetSFX()
     {
-        // Ç®¿¡¼­ ²¨³»¿Í¼­ ¹ÝÈ¯
+        // í’€ì—ì„œ êº¼ë‚´ì™€ì„œ ë°˜í™˜
         PooledObject po = _sfxPool.PopPool();
         return po as SFXController;
     }
-
 }
