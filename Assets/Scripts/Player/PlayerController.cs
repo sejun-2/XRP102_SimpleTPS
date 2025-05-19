@@ -111,6 +111,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     {
         _status.CurrentHp.Value -= value;
 
+        // 체력을 떨어뜨리되, 체력이 0 이하가 되면 플레이어가 사망.
         if (_status.CurrentHp.Value <= 0) Dead();
     }
 
@@ -118,6 +119,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     {
         int hp = _status.CurrentHp.Value + value;
 
+        // 체력을 회복하되, 체력이 최대체력(MaxHP)보다 커지면 최대체력으로 설정.
         _status.CurrentHp.Value = Mathf.Clamp(
             hp,
             0,
@@ -176,6 +178,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     private void SetAttackAnimation(bool value) => _animator.SetBool("IsAttack", value);
     private void SetHpUIGuage(int currentHp)
     {
+        // 비율 = 현재수치 / 최대수치
         float hp = currentHp / (float)_status.MaxHP;
         _hpUI.SetImageFillAmount(hp);
     }

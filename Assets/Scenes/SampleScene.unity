@@ -984,6 +984,10 @@ PrefabInstance:
       propertyPath: _fireParticle
       value: 
       objectReference: {fileID: 5358845237505619170, guid: 0ceb664a692170b46b378d500f6f081e, type: 3}
+    - target: {fileID: 75791535269036486, guid: 11fc6abd12246ac429de1bce35d6ae6b, type: 3}
+      propertyPath: _targetLayer.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1788389793189225171, guid: 11fc6abd12246ac429de1bce35d6ae6b, type: 3}
       propertyPath: m_Name
       value: PlayerCharacter
@@ -1039,6 +1043,18 @@ PrefabInstance:
     - target: {fileID: 3125261678778503764, guid: 11fc6abd12246ac429de1bce35d6ae6b, type: 3}
       propertyPath: _aimInputAction.m_SingletonActionBindings.Array.data[0].m_Action
       value: Aim Input
+      objectReference: {fileID: 0}
+    - target: {fileID: 3161216412885388686, guid: 11fc6abd12246ac429de1bce35d6ae6b, type: 3}
+      propertyPath: m_Type
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3161216412885388686, guid: 11fc6abd12246ac429de1bce35d6ae6b, type: 3}
+      propertyPath: m_FillAmount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3161216412885388686, guid: 11fc6abd12246ac429de1bce35d6ae6b, type: 3}
+      propertyPath: m_FillMethod
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5430736730930142287, guid: 11fc6abd12246ac429de1bce35d6ae6b, type: 3}
       propertyPath: m_LocalPosition.x
