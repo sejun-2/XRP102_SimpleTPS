@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-public static class ReferenceRegistry
+public static class ReferenceRegistry   // static class·Î ¹Ù²ã¾ß ÇÔ.
 {
     private static Dictionary<GameObject, ReferenceProvider> _providers = new();
 

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[DisallowMultipleComponent]
+[DisallowMultipleComponent] // 하나의 오브젝트에 여러개 붙지 못하게 함.
 public class ReferenceProvider : MonoBehaviour
 {
     [SerializeField] private Component _component;
